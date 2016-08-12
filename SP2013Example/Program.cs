@@ -26,7 +26,7 @@ namespace SP2013Example
             request1.Accept = "application/json;odata=verbose";
 
             HttpWebResponse response1 = (HttpWebResponse)request1.GetResponse();
-            String jsonResults1 = readHttpWebResponse(response1);
+            String jsonResults1 = getJsonFromResponse(response1);
 
             Console.WriteLine(jsonResults1);
 
@@ -36,7 +36,7 @@ namespace SP2013Example
 #endif
         }
 
-        private static String readHttpWebResponse(HttpWebResponse httpWebResponse)
+        private static String getJsonFromResponse(HttpWebResponse httpWebResponse)
         {
             Stream postStream = httpWebResponse.GetResponseStream();
             StreamReader postReader = new StreamReader(postStream);
@@ -69,7 +69,7 @@ namespace SP2013Example
             spRequestNTLM.ContentLength = 0; // MUST do this
 
             HttpWebResponse httpWebResponse = (HttpWebResponse)spRequestNTLM.GetResponse();
-            string jsonResults = readHttpWebResponse(httpWebResponse);
+            string jsonResults = getJsonFromResponse(httpWebResponse);
 
 //            Console.WriteLine(jsonResults);
 
