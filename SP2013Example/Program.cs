@@ -8,6 +8,8 @@ using System.Net;                   // added
 using System.IO;                    // added
 
 
+// Convert JSON to C#  http://jsonutils.com/
+
 
 namespace SP2013Example
 {
@@ -21,7 +23,7 @@ namespace SP2013Example
             Console.WriteLine(formDigest);
             Console.WriteLine();
 */
-            HttpWebRequest request1 = getHttpWebRequestWithNTLMCredentials("http://edc.micron.com/mti/MEM002/_api/web/lists?$top=2");
+            HttpWebRequest request1 = getHttpWebRequestWithNTLMCredentials("http://edc.micron.com/mti/MEM002/_api/web/lists?$filter=BaseTemplate eq 101");
             request1.Method = "GET";
             request1.Accept = "application/json;odata=verbose";
 
@@ -33,9 +35,10 @@ namespace SP2013Example
 
             SP2013_Web_Lists.WebLists webLists = Newtonsoft.Json.JsonConvert.DeserializeObject<SP2013_Web_Lists.WebLists>(jsonResults1);
 
+            Console.WriteLine("{0,-35}  {1,10}  {2,12}", "Title", "ItemCount", "BaseTemplate", "URI");
             foreach (SP2013_Web_Lists.Result result in webLists.d.results)
             {
-                Console.WriteLine("Title => {0}  Id => {1}", result.Title, result.Id);
+                Console.WriteLine("{0,-35} {1,10} {2,12} {3}", result.Title, result.ItemCount,  result.BaseTemplate, result.__metadata.uri);
             }
 #if DEBUG
             Console.WriteLine("Press enter to close...");
