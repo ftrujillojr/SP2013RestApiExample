@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// https://mitseu.files.wordpress.com/2014/08/microsoft_visual_c-sharp__2013_step_by_step.pdf
+
 namespace SP2013Example
 {
     enum Season { Spring = 101, Summer, Fall, Winter }
@@ -421,6 +423,79 @@ namespace SP2013Example
                                         //  From ref LHS        Join ref RHS
                                         select new { c.FirstName, c.LastName, a.Country };
         }
+
+        /*
+            The async modifier does not signify that a method runs asynchronously on a separate thread.
+            All it does is specify that the code in the method can be divided into one or more continuations.
+            When these continuations run, they execute on the same thread as the original method call.
+          
+            The await operator specifies the point at which the C# compiler can split the code into a
+            continuation. The await operator itself expects its operand to be an awaitable object. An
+            awaitable object is a type that provides the GetAwaiter method, which returns an object that
+            in turn provides methods for running code and waiting for it to complete. The C# compiler
+            converts your code into statements that use these methods to create an appropriate
+            continuation.
+         
+            Additionally, you cannot use the await operator in the catch or finally blocks of a try/catch/
+            finally construct (not even in an async method) or in a query expression in a LINQ query. 
+        */
+        private async void slowMethod()
+        {
+            await doFirstLongRunningOperation();
+            /*
+            await doSecondLongRunningOperation();
+            await doThirdLongRunningOperation();
+            */
+        }
+
+        private Task doFirstLongRunningOperation()
+        {
+            Task t = Task.Run(() => { /* original code for this method goes here */ });
+            return t;
+        }
+
+        private async Task doFirstLongRunningOperation_MultipleTasksInParallel()
+        {
+            Task first = Task.Run(() => { /* code for first operation */ });
+            Task second = Task.Run(() => { /* code for second operation */ });
+            await first;
+            await second;
+        }
+
+        private void taskReturningValue()
+        {
+            Task<int> calculateValueTask = Task.Run(() => calculateValue(2,4));
+            int calculatedData = calculateValueTask.Result; // Block until calculateValueTask completes
+            Console.WriteLine("Calculated Data " + calculatedData);
+        }
+
+        private int calculateValue(int a, int b)
+        {
+             int someValue = a + b;
+             return someValue;
+        }
+
+        /*
+            This method looks slightly confusing inasmuch as the return type is specified as Task<int>, but
+            the return statement actually returns an int. Remember that when you define an async method, the
+            compiler performs some refactoring of your code, and it essentially returns a reference to Task that
+            runs the continuation for the statement return generateResultTask.Result. The type of the expression
+            returned by this continuation is int, so the return type of the method is Task<int>.
+         
+            To invoke an asynchronous method that returns a value, use the await operator, like this:
+         
+            int result = await calculateValueAsync(...);
+        */
+        private async Task<int> calculateValueAsync(int a, int b)
+        {
+         // Invoke calculateValue using a Task
+         Task<int> generateResultTask = Task.Run(() => calculateValue(a,b));
+         await generateResultTask;
+         return generateResultTask.Result;
+        }
+
+
+
 
     } // class HttpHelper
 

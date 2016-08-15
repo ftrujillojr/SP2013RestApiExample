@@ -21,15 +21,22 @@ namespace SP2013Example
             Console.WriteLine(formDigest);
             Console.WriteLine();
 */
-            HttpWebRequest request1 = getHttpWebRequestWithNTLMCredentials("http://edc.micron.com/mti/MEM002/_api/web/lists");
+            HttpWebRequest request1 = getHttpWebRequestWithNTLMCredentials("http://edc.micron.com/mti/MEM002/_api/web/lists?$top=2");
             request1.Method = "GET";
             request1.Accept = "application/json;odata=verbose";
 
             HttpWebResponse response1 = (HttpWebResponse)request1.GetResponse();
             String jsonResults1 = getJsonFromResponse(response1);
 
-            Console.WriteLine(jsonResults1);
+//            Console.WriteLine(jsonResults1);
 
+
+            SP2013_Web_Lists.WebLists webLists = Newtonsoft.Json.JsonConvert.DeserializeObject<SP2013_Web_Lists.WebLists>(jsonResults1);
+
+            foreach (SP2013_Web_Lists.Result result in webLists.d.results)
+            {
+                Console.WriteLine("Title => {0}  Id => {1}", result.Title, result.Id);
+            }
 #if DEBUG
             Console.WriteLine("Press enter to close...");
             Console.ReadLine();
