@@ -174,16 +174,29 @@ namespace SP2013Example
             GC.SuppressFinalize(this);
         }
 
+        /*  How to use using block for IDisposable resources
+         * 
+         *   using(HttpHelper httpHelper = new HttpHelper())
+         *   {
+         *          // do work.
+         *          // Dispose() will be called automatically.
+         *   }
+         * 
+         */
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            lock (this) // Eliminate the chances of two concurrent threads disposing of the same resources
+                        // in the same object simultaneously.
             {
-                if (disposing)
+                if (!this.disposed)
                 {
-                    // release large, managed resource here
+                    if (disposing)
+                    {
+                        // release large, managed resource here
+                    }
+                    // release unmanaged resources here
+                    this.disposed = true;
                 }
-                // release unmanaged resources here
-                this.disposed = true;
             }
         }
 
