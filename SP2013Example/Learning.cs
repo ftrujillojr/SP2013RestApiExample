@@ -46,7 +46,7 @@ namespace SP2013Example
     //
     // HttpHelper httpHelper = new HttpHelper {X = 1, Y=2};
 
-    class HttpHelper : System.Object, IDisposable, XYCoordinates
+    class Learning : System.Object, IDisposable, XYCoordinates
     {
         private bool? myDebug = null;  // the ? makes this variable nullable.
         private Season mySeason;
@@ -74,7 +74,7 @@ namespace SP2013Example
             set { this.y = value; }
         }
 
-        public HttpHelper()  // Default Constructor
+        public Learning()  // Default Constructor
         {
             //allocate some HUGE memory resource
             this.disposed = false;   // This will be used in Dispose()
@@ -87,12 +87,12 @@ namespace SP2013Example
             this.mySeason = Season.Spring;
         }
 
-        public HttpHelper(HttpHelper rhs) // Copy Constructor
+        public Learning(Learning rhs) // Copy Constructor
         {
             this.myDebug = rhs.myDebug;
         }
 
-        ~HttpHelper()  // Destructor.   Can not use public or any params.
+        ~Learning()  // Destructor.   Can not use public or any params.
         {
             this.myDebug = null;   // close handles and set vars to null to tell GC ok to release memory.
         }
