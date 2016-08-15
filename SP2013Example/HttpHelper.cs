@@ -33,6 +33,10 @@ namespace SP2013Example
         int Y { get; set; }
     }
 
+    // Use properties to initialize an object.
+    //
+    // HttpHelper httpHelper = new HttpHelper {X = 1, Y=2};
+    
     class HttpHelper : System.Object, IDisposable, XYCoordinates
     {
         private bool? myDebug = null;  // the ? makes this variable nullable.
