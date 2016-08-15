@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SP2013_Web_Lists
+namespace SP2013_WebLists
 {
     public class Metadata
     {
