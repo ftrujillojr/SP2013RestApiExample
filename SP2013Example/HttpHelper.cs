@@ -27,17 +27,38 @@ namespace SP2013Example
         }
     }
 
-    class HttpHelper : System.Object, IDisposable    // all classes inherit from System.Object.  Just showing how to inherit.
+    interface XYCoordinates
+    {
+        int X { get; set; }
+        int Y { get; set; }
+    }
+
+    class HttpHelper : System.Object, IDisposable, XYCoordinates
     {
         private bool? myDebug = null;  // the ? makes this variable nullable.
         private Season mySeason;
+        private int x;
+        private int y;
         private bool disposed = false;  // flag to indicate whether the resource
         // has already been disposed
         public bool MyProperty { get; set; }  // 1. property without private backup.
         public Season MySeason                // 2. auto implemented properties with private backup.
         {
-            get { return mySeason; }
-            set { mySeason = value; }         // value is a reserved keyword.
+            // get is public and set is private
+            get { return this.mySeason; }          // You don't have to define both get and set.
+            private set { this.mySeason = value; } // value is a reserved keyword.
+        }
+
+        public virtual int X
+        {
+            get { return this.x; }
+            set { this.x = value; }
+        }
+
+        public virtual int Y
+        {
+            get { return this.y; }
+            set { this.y = value; }
         }
 
         public HttpHelper()  // Default Constructor
@@ -62,6 +83,7 @@ namespace SP2013Example
         {
             this.myDebug = null;   // close handles and set vars to null to tell GC ok to release memory.
         }
+
 
 
         private void someMethodWithOut(out bool boolValue) // boolValue passed by Reference, must assign to it inside.
