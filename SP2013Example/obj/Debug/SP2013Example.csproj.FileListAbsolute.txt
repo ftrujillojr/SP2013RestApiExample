@@ -4,4 +4,3 @@ C:\Users\ftrujillo\Documents\DO_NOT_MIRROR_OR_BACKUP\Visual Studio 2013\Projects
 C:\Users\ftrujillo\Documents\DO_NOT_MIRROR_OR_BACKUP\Visual Studio 2013\Projects\SP2013Example\SP2013Example\obj\Debug\SP2013Example.exe
 C:\Users\ftrujillo\Documents\DO_NOT_MIRROR_OR_BACKUP\Visual Studio 2013\Projects\SP2013Example\SP2013Example\obj\Debug\SP2013Example.pdb
 C:\Users\ftrujillo\Documents\DO_NOT_MIRROR_OR_BACKUP\Visual Studio 2013\Projects\SP2013Example\SP2013Example\bin\Debug\Newtonsoft.Json.dll
-C:\Users\ftrujillo\Documents\DO_NOT_MIRROR_OR_BACKUP\Visual Studio 2013\Projects\SP2013Example\SP2013Example\obj\Debug\SP2013Example.csprojResolveAssemblyReference.cache

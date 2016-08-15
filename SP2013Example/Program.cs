@@ -7,9 +7,7 @@ using Microsoft.SharePoint.Client;  // added
 using System.Net;                   // added
 using System.IO;                    // added
 
-
 // Convert JSON to C#  http://jsonutils.com/
-
 
 namespace SP2013Example
 {
@@ -17,25 +15,24 @@ namespace SP2013Example
     {
         static void Main(string[] args)
         {
-/*
-            string formDigest = getFormDigest("http://edc.micron.com/mti/MEM002"); // Needed for POST, PUT, MERGE, and DELETE
-            Console.WriteLine();
-            Console.WriteLine(formDigest);
-            Console.WriteLine();
-*/
+            HttpWebRequest contextRequest = getHttpWebRequestWithNTLMCredentials("http://edc.micron.com/mti/MEM002/_api/contextinfo");
+            contextRequest.Method = "POST";
+            contextRequest.Accept = "application/json;odata=verbose";
+            contextRequest.ContentLength = 0;  // MUST 
+            HttpWebResponse contextResponse = (HttpWebResponse)contextRequest.GetResponse();
+            String contextJson = getJsonFromResponse(contextResponse);
+
+
+
             HttpWebRequest request1 = getHttpWebRequestWithNTLMCredentials("http://edc.micron.com/mti/MEM002/_api/web/lists?$filter=BaseTemplate eq 101");
             request1.Method = "GET";
             request1.Accept = "application/json;odata=verbose";
-
             HttpWebResponse response1 = (HttpWebResponse)request1.GetResponse();
             String jsonResults1 = getJsonFromResponse(response1);
 
-//            Console.WriteLine(jsonResults1);
-
-
             SP2013_Web_Lists.WebLists webLists = Newtonsoft.Json.JsonConvert.DeserializeObject<SP2013_Web_Lists.WebLists>(jsonResults1);
 
-            Console.WriteLine("{0,-35}  {1,10}  {2,12}", "Title", "ItemCount", "BaseTemplate", "URI");
+            Console.WriteLine("{0,-35} {1,10} {2,12} {3}", "Title", "ItemCount", "BaseTemplate", "URI");
             foreach (SP2013_Web_Lists.Result result in webLists.d.results)
             {
                 Console.WriteLine("{0,-35} {1,10} {2,12} {3}", result.Title, result.ItemCount,  result.BaseTemplate, result.__metadata.uri);
@@ -45,6 +42,8 @@ namespace SP2013Example
             Console.ReadLine();
 #endif
         }
+
+
 
         private static String getJsonFromResponse(HttpWebResponse httpWebResponse)
         {
