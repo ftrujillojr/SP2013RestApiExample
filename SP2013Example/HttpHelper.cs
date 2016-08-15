@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,13 +27,13 @@ namespace SP2013Example
         }
     }
 
-    class HttpHelper : System.Object    // all classes inherit from System.Object.  Just showing how to inherit.
+    class HttpHelper : System.Object, IDisposable    // all classes inherit from System.Object.  Just showing how to inherit.
     {
         private bool? myDebug = null;  // the ? makes this variable nullable.
         private Season mySeason;
-
+        private bool disposed = false;  // flag to indicate whether the resource
+        // has already been disposed
         public bool MyProperty { get; set; }  // 1. property without private backup.
-
         public Season MySeason                // 2. auto implemented properties with private backup.
         {
             get { return mySeason; }
@@ -41,6 +42,9 @@ namespace SP2013Example
 
         public HttpHelper()  // Default Constructor
         {
+            //allocate some HUGE memory resource
+            this.disposed = false;   // This will be used in Dispose()
+
             if (!this.myDebug.HasValue)  // or  this.debug == null
             {
                 this.myDebug = false;
@@ -52,6 +56,11 @@ namespace SP2013Example
         public HttpHelper(HttpHelper rhs) // Copy Constructor
         {
             this.myDebug = rhs.myDebug;
+        }
+
+        ~HttpHelper()  // Destructor.   Can not use public or any params.
+        {
+            this.myDebug = null;   // close handles and set vars to null to tell GC ok to release memory.
         }
 
 
@@ -86,7 +95,7 @@ namespace SP2013Example
             // Time[] schedule = { new Time(12, 30), new Time(5, 30) };
 
             // var keyword lets compiler decide types to store.  MUST be the same type. string in this case.
-            var names = new[] { "John", "Diana", "James", "Francesca" }; 
+            var names = new[] { "John", "Diana", "James", "Francesca" };
 
             var names2 = new[] 
             { 
@@ -128,7 +137,58 @@ namespace SP2013Example
 
         }
 
-    }
+        public void tryCatchExample(string filename)
+        {
+            TextReader reader = new StreamReader(filename);
+            try
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    Console.WriteLine(line);
+                }
+            }
+            finally
+            {
+                reader.Close();
+            }
+        }
+
+        public void usingStatementEquivilantToTryCatch(string filename)
+        {
+            // The variable you declare in a using statement must be of a type that implements the IDisposable interface.
+            // reader in this case.
+            using (TextReader reader = new StreamReader(filename))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    Console.WriteLine(line);
+                }
+            }
+        }
+
+        public virtual void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    // release large, managed resource here
+                }
+                // release unmanaged resources here
+                this.disposed = true;
+            }
+        }
 
 
-}
+    } // class HttpHelper
+
+
+} // namespace SP2013Example
