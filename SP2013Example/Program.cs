@@ -16,6 +16,16 @@ namespace SP2013Example
     {
         static void Main(string[] args)
         {
+            SP2013REST contextInfoRequest = new SP2013REST("http://edc.micron.com/mti/MEM002", "/_api/contextinfo");
+            String contextInfoResponse = contextInfoRequest.executePost(null, null, null);
+
+            // Deserialize JSON to Custom Object
+            SP2013_ContextInfo.ContextInfo contextInfo = JsonConvert.DeserializeObject<SP2013_ContextInfo.ContextInfo>(contextInfoResponse);
+            Console.WriteLine(contextInfo.d.GetContextWebInformation.FormDigestValue);
+
+            Console.WriteLine(SP2013REST.formatJsonPretty(contextInfo));
+            Console.WriteLine(SP2013REST.formatJsonCompact(contextInfo));
+
             // *****************************************************************************************************************************************
 
             SP2013REST webListsRequest = new SP2013REST("http://edc.micron.com/mti/MEM002", "/_api/web/lists?$filter=BaseTemplate eq 101");

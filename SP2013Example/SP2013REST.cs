@@ -97,6 +97,19 @@ namespace SP2013Example
             return jsonString;
         }
 
+        public static string formatJsonPretty(Object obj)
+        {
+            // Serialize Custom Object back to JSON and indent  (pretty print)
+            string formattedJsonString = JsonConvert.SerializeObject(obj, Formatting.Indented);
+            return formattedJsonString;
+        }
+
+        public static string formatJsonCompact(Object obj)
+        {
+            // Serialize Custom Object back to JSON and collapse  (compact print)
+            string formattedJsonString = JsonConvert.SerializeObject(obj, Formatting.None);
+            return formattedJsonString;
+        }
 
         private String getFormDigestValue()
         {
