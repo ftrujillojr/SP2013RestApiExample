@@ -16,62 +16,19 @@ namespace SP2013Example
     {
         static void Main(string[] args)
         {
-            // SP2013 REST API endpoint
-            HttpWebRequest contextRequest = getHttpWebRequestWithNTLMCredentials2("http://edc.micron.com/mti/MEM002/_api/contextinfo");
-            // HEADERS
-            contextRequest.Method = "POST";
-            contextRequest.Accept = "application/json;odata=verbose";
-            contextRequest.ContentType = "application/json;odata=verbose";
-            contextRequest.ContentLength = 0;  // MUST 
-            // RESPONSE
-            HttpWebResponse contextResponse = (HttpWebResponse)contextRequest.GetResponse();
-            String contextJson = readResponse2(contextResponse);
-            // Deserialize JSON to Custom Object
-            SP2013_ContextInfo.ContextInfo contextInfo = JsonConvert.DeserializeObject<SP2013_ContextInfo.ContextInfo>(contextJson);
-            Console.WriteLine("\nFormDigestValue => " + contextInfo.d.GetContextWebInformation.FormDigestValue + "\n");
-            String newJson = JsonConvert.SerializeObject(contextInfo, Formatting.Indented);
-            
-            Console.WriteLine("JSON => " + newJson + "\n");
-            
             // *****************************************************************************************************************************************
 
-            // SP2013 REST API endpoint
-            HttpWebRequest request1 = getHttpWebRequestWithNTLMCredentials2("http://edc.micron.com/mti/MEM002/_api/web/lists?$filter=BaseTemplate eq 101");
-            // HEADERS
-            request1.Method = "GET";
-            request1.Accept = "application/json;odata=verbose";
-            // RESPONSE
-            HttpWebResponse response1 = (HttpWebResponse)request1.GetResponse();
-            String jsonResults1 = readResponse2(response1);
+            SP2013REST webListsRequest = new SP2013REST("http://edc.micron.com/mti/MEM002", "/_api/web/lists?$filter=BaseTemplate eq 101");
+            String webListsResponse = webListsRequest.executeGet();
+
             // Deserialize JSON to Custom Object
-            SP2013_WebLists.WebLists webLists = JsonConvert.DeserializeObject<SP2013_WebLists.WebLists>(jsonResults1);
+            SP2013_WebLists.WebLists webLists = JsonConvert.DeserializeObject<SP2013_WebLists.WebLists>(webListsResponse);
 
             Console.WriteLine("{0,-35} {1,10} {2,12} {3}", "Title", "ItemCount", "BaseTemplate", "URI");
             foreach (SP2013_WebLists.Result result in webLists.d.results)
             {
-                Console.WriteLine("{0,-35} {1,10} {2,12} {3}", result.Title, result.ItemCount,  result.BaseTemplate, result.__metadata.uri);
+                Console.WriteLine("{0,-35} {1,10} {2,12} {3}", result.Title, result.ItemCount, result.BaseTemplate, result.__metadata.uri);
             }
-
-        }
-
-        private static String readResponse2(HttpWebResponse httpWebResponse)
-        {
-            Stream postStream = httpWebResponse.GetResponseStream();
-            StreamReader postReader = new StreamReader(postStream);
-            String results = postReader.ReadToEnd();
-
-            postReader.Close();
-            postStream.Close();
-            return results;
-        }
-
-        private static HttpWebRequest getHttpWebRequestWithNTLMCredentials2(string restUrl)
-        {
-            CredentialCache credCache = new CredentialCache();
-            credCache.Add(new Uri(restUrl), "NTLM", CredentialCache.DefaultNetworkCredentials);
-            HttpWebRequest httpWebRequest = (HttpWebRequest)HttpWebRequest.Create(restUrl);
-            httpWebRequest.Credentials = credCache;
-            return httpWebRequest;
         }
     }
 }
