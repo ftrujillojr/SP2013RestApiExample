@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.SharePoint.Client;  // added
 using System.Net;                   // added
 using System.IO;
-using Newtonsoft.Json;                    // added
+using Newtonsoft.Json;              // added
 
 // Convert JSON to C# classes  http://jsonutils.com/
 
@@ -74,6 +74,20 @@ namespace SP2013Example
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Basic Auth
