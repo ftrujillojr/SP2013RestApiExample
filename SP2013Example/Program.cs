@@ -31,8 +31,7 @@ namespace SP2013Example
             String newJson = JsonConvert.SerializeObject(contextInfo, Formatting.Indented);
             
             Console.WriteLine("JSON => " + newJson + "\n");
-
-
+            
             // *****************************************************************************************************************************************
 
             // SP2013 REST API endpoint
