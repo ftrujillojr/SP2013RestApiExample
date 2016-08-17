@@ -110,7 +110,7 @@ namespace SP2013_WebLists
         public int BaseTemplate { get; set; }
         public int BaseType { get; set; }
         public bool ContentTypesEnabled { get; set; }
-        public DateTime Created { get; set; }
+        public DateTime? Created { get; set; }
         public string DefaultContentApprovalWorkflowId { get; set; }
         public string Description { get; set; }
         public string Direction { get; set; }
@@ -134,8 +134,8 @@ namespace SP2013_WebLists
         public bool IsCatalog { get; set; }
         public bool IsPrivate { get; set; }
         public int ItemCount { get; set; }
-        public DateTime LastItemDeletedDate { get; set; }
-        public DateTime LastItemModifiedDate { get; set; }
+        public DateTime? LastItemDeletedDate { get; set; }
+        public DateTime? LastItemModifiedDate { get; set; }
         public string ListItemEntityTypeFullName { get; set; }
         public int MajorVersionLimit { get; set; }
         public int MajorWithMinorVersionsLimit { get; set; }

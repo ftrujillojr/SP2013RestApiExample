@@ -54,6 +54,28 @@ namespace SP2013Example
             Console.WriteLine("\n{0,-35} {1,10} {2,12} {3}", "Title", "ItemCount", "eTag", "URI");
             Console.WriteLine("{0,-35} {1,10} {2,12} {3}", webList.d.Title, webList.d.ItemCount, webList.d.__metadata.etag, webList.d.__metadata.uri);
 
+            // *****************************************************************************************************************************************
+
+            SP2013REST opSSDItemsRequest = new SP2013REST("http://edc.micron.com/mti/MEM002", "/_api/Web/Lists/GetByTitle('Operations SSD')/Items?$select=Id,Title,Created,Modified,File/Name,File/Title,File/ServerRelativeUrl&$expand=File");
+            String opSSDItemsResponse = opSSDItemsRequest.executeGet();
+
+            // Deserialize JSON to Custom Object
+            SP2013_WebListItems.WebListItems webListItems = JsonConvert.DeserializeObject<SP2013_WebListItems.WebListItems>(opSSDItemsResponse);
+
+            Console.WriteLine("\n");
+            foreach (SP2013_WebListItems.Result result in webListItems.d.results)
+            {
+                Console.Write("{0,8} ", result.ID);
+                Console.Write("{0} ", String.Format("{0:yyyy'-'MM'-'dd'T'HH':'MM':'ss'.'FFFzz}", result.Modified));
+                Console.Write("{0} ", result.File.ServerRelativeUrl);
+                //                Console.Write("{0,25} ", result.Created);
+//                Console.Write("{0,25} ", result.Modified);
+//                Console.Write("{0} ", result.EDC_MemoryArea);
+//                Console.Write("{0} ", result.EDC_MemoryDocType);
+//                Console.Write("{0} ", result.EDC_MicronProduct);
+                Console.WriteLine("");
+            }
+
         }
     }
 }
