@@ -21,24 +21,39 @@ namespace SP2013Example
 
             // Deserialize JSON to Custom Object
             SP2013_ContextInfo.ContextInfo contextInfo = JsonConvert.DeserializeObject<SP2013_ContextInfo.ContextInfo>(contextInfoResponse);
-            Console.WriteLine(contextInfo.d.GetContextWebInformation.FormDigestValue);
+            Console.WriteLine("{0}\n", contextInfo.d.GetContextWebInformation.FormDigestValue);
 
-            Console.WriteLine(SP2013REST.formatJsonPretty(contextInfo));
-            Console.WriteLine(SP2013REST.formatJsonCompact(contextInfo));
+            string prettyJson = SP2013REST.objectToJsonPretty(contextInfo);
+            //string compactJson = SP2013REST.objectToJsonCompact(contextInfo);
+            Console.WriteLine("{0}\n", prettyJson);
+            //Console.WriteLine("{0}\n", compactJson);
+            //Console.WriteLine("{0}\n", SP2013REST.jsonPretty(compactJson));
 
             // *****************************************************************************************************************************************
 
-            SP2013REST webListsRequest = new SP2013REST("http://edc.micron.com/mti/MEM002", "/_api/web/lists?$filter=BaseTemplate eq 101");
+            SP2013REST webListsRequest = new SP2013REST("http://edc.micron.com/mti/MEM002", "/_api/Web/Lists?$filter=BaseTemplate eq 101");
             String webListsResponse = webListsRequest.executeGet();
 
             // Deserialize JSON to Custom Object
             SP2013_WebLists.WebLists webLists = JsonConvert.DeserializeObject<SP2013_WebLists.WebLists>(webListsResponse);
 
-            Console.WriteLine("{0,-35} {1,10} {2,12} {3}", "Title", "ItemCount", "BaseTemplate", "URI");
+            Console.WriteLine("\n{0,-35} {1,10} {2,12} {3}", "Title", "ItemCount", "BaseTemplate", "URI");
             foreach (SP2013_WebLists.Result result in webLists.d.results)
             {
                 Console.WriteLine("{0,-35} {1,10} {2,12} {3}", result.Title, result.ItemCount, result.BaseTemplate, result.__metadata.uri);
             }
+
+            // *****************************************************************************************************************************************
+
+            SP2013REST opSSDRequest = new SP2013REST("http://edc.micron.com/mti/MEM002", "/_api/Web/Lists/GetByTitle('Operations SSD')");
+            String opSSDResponse = opSSDRequest.executeGet();
+
+            // Deserialize JSON to Custom Object
+            SP2013_WebList.WebList webList = JsonConvert.DeserializeObject<SP2013_WebList.WebList>(opSSDResponse);
+
+            Console.WriteLine("\n{0,-35} {1,10} {2,12} {3}", "Title", "ItemCount", "eTag", "URI");
+            Console.WriteLine("{0,-35} {1,10} {2,12} {3}", webList.d.Title, webList.d.ItemCount, webList.d.__metadata.etag, webList.d.__metadata.uri);
+
         }
     }
 }

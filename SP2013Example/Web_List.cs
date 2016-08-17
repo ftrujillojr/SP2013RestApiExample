@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SP2013_Web_List
+namespace SP2013_WebList
 {
     public class Metadata
     {
@@ -147,7 +147,7 @@ namespace SP2013_Web_List
         public string Title { get; set; }
     }
 
-    public class Web_List
+    public class WebList
     {
         public D d { get; set; }
     }

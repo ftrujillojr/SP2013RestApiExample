@@ -97,14 +97,30 @@ namespace SP2013Example
             return jsonString;
         }
 
-        public static string formatJsonPretty(Object obj)
+        public static string jsonPretty(string jsonString)
+        {
+            var obj = JsonConvert.DeserializeObject<Object>(jsonString);
+            // Serialize Custom Object back to JSON and indent  (pretty print)
+            string formattedJsonString = JsonConvert.SerializeObject(obj, Formatting.Indented);
+            return formattedJsonString;
+        }
+
+        public static string jsonCompact(string jsonString)
+        {
+            var obj = JsonConvert.DeserializeObject<Object>(jsonString);
+            // Serialize Custom Object back to JSON and indent  (pretty print)
+            string formattedJsonString = JsonConvert.SerializeObject(obj, Formatting.None);
+            return formattedJsonString;
+        }
+
+        public static string objectToJsonPretty(Object obj)
         {
             // Serialize Custom Object back to JSON and indent  (pretty print)
             string formattedJsonString = JsonConvert.SerializeObject(obj, Formatting.Indented);
             return formattedJsonString;
         }
 
-        public static string formatJsonCompact(Object obj)
+        public static string objectToJsonCompact(Object obj)
         {
             // Serialize Custom Object back to JSON and collapse  (compact print)
             string formattedJsonString = JsonConvert.SerializeObject(obj, Formatting.None);
