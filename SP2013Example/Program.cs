@@ -16,6 +16,7 @@ namespace SP2013Example
     {
         static void Main(string[] args)
         {
+            /*
             SP2013REST contextInfoRequest = new SP2013REST("http://edc.micron.com/mti/MEM002", "/_api/contextinfo");
             String contextInfoResponse = contextInfoRequest.executePost(null, null, null);
 
@@ -29,20 +30,56 @@ namespace SP2013Example
             //Console.WriteLine("{0}\n", compactJson);
             //Console.WriteLine("{0}\n", SP2013REST.jsonPretty(compactJson));
 
+            */
+
             // *****************************************************************************************************************************************
 
-            SP2013REST webListsRequest = new SP2013REST("http://edc.micron.com/mti/MEM002", "/_api/Web/Lists?$filter=BaseTemplate eq 101");
-            String webListsResponse = webListsRequest.executeGet();
-
-            // Deserialize JSON to Custom Object
-            SP2013_WebLists.WebLists webLists = JsonConvert.DeserializeObject<SP2013_WebLists.WebLists>(webListsResponse);
-
-            Console.WriteLine("\n{0,-35} {1,10} {2,12} {3}", "Title", "ItemCount", "BaseTemplate", "URI");
-            foreach (SP2013_WebLists.Result result in webLists.d.results)
+            try
             {
-                Console.WriteLine("{0,-35} {1,10} {2,12} {3}", result.Title, result.ItemCount, result.BaseTemplate, result.__metadata.uri);
+                SP2013REST webRequest = new SP2013REST("http://edc.micron.com/mti/MEM002",
+                                                        "/_api/Web?$select=Title,Url",
+                                                        false);
+                String webResponse = webRequest.executeGet();
+
+                // Deserialize JSON to Custom Object
+                SP2013_Web.Web web = JsonConvert.DeserializeObject<SP2013_Web.Web>(webResponse);
+
+                Console.WriteLine("\nShowing Top Web site");
+                Console.WriteLine("================================");
+                Console.WriteLine("{0,-35} {1}", "Title", "URL");
+                Console.WriteLine("{0,-35} {1} ", web.d.Title, web.d.Url);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
 
+
+            // *****************************************************************************************************************************************
+            try
+            {
+                SP2013REST webListsRequest = new SP2013REST("http://edc.micron.com/mti/MEM002",
+                                                            "/_api/Web/Lists?$select=Title,ItemCount,BaseTemplate&$filter=BaseTemplate eq 101",
+                                                            false);
+                String webListsResponse = webListsRequest.executeGet();
+
+                // Deserialize JSON to Custom Object
+                SP2013_WebLists.WebLists webLists = JsonConvert.DeserializeObject<SP2013_WebLists.WebLists>(webListsResponse);
+
+                Console.WriteLine("\nShowing All Lists contained on web site.");
+                Console.WriteLine("=============================================");
+                Console.WriteLine("{0,-35} {1,10} {2,12}", "Title", "ItemCount", "BaseTemplate");
+                foreach (SP2013_WebLists.Result result in webLists.d.results)
+                {
+                    Console.WriteLine("{0,-35} {1,10} {2,12}", result.Title, result.ItemCount, result.BaseTemplate);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            /*
             // *****************************************************************************************************************************************
 
             SP2013REST opSSDRequest = new SP2013REST("http://edc.micron.com/mti/MEM002", "/_api/Web/Lists/GetByTitle('Operations SSD')");
@@ -75,7 +112,7 @@ namespace SP2013Example
 //                Console.Write("{0} ", result.EDC_MicronProduct);
                 Console.WriteLine("");
             }
-
+           */
         }
     }
 }

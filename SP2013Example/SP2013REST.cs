@@ -15,6 +15,8 @@ namespace SP2013Example
     {
         private string baseSPSite = null;
         private string endpoint = null;
+        private bool debug = false;
+        private HttpWebRequest httpWebRequest = null;
 
         public SP2013REST(string baseSPSite, string endpoint)
         {
@@ -22,20 +24,62 @@ namespace SP2013Example
             this.endpoint = baseSPSite + endpoint;
         }
 
+        public SP2013REST(string baseSPSite, string endpoint, bool debug)
+        {
+            this.baseSPSite = baseSPSite;
+            this.endpoint = baseSPSite + endpoint;
+            this.debug = debug;
+        }
+
         public String executeGet()
         {
-            // SP2013 REST API endpoint
-            HttpWebRequest httpWebRequest = this.getHttpWebRequestWithNTLMCredentials(this.endpoint);
+            String jsonString = null;
 
-            // HEADERS
-            httpWebRequest.Method = "GET";
-            httpWebRequest.Accept = "application/json;odata=verbose";
-            httpWebRequest.Timeout = 60 * 1000; // GetResponse() timeout.
+            try
+            {
+                // SP2013 REST API endpoint
+                this.httpWebRequest = this.getHttpWebRequestWithNTLMCredentials(this.endpoint);
 
-            // RESPONSE
-            HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-            String jsonString = readResponse(httpWebResponse);
+                // HEADERS
+                this.httpWebRequest.Method = "GET";
+                this.httpWebRequest.Accept = "application/json;odata=verbose";
+                this.httpWebRequest.Timeout = 60 * 1000; // GetResponse() timeout.
 
+                if (this.debug)
+                {
+                    Console.WriteLine("\nHttpWebRequest {0} => {1}", this.httpWebRequest.Method, this.endpoint);
+                    WebHeaderCollection webHeaderCollectionRequest = this.httpWebRequest.Headers;
+                    string[] requestKeys = httpWebRequest.Headers.AllKeys;
+                    Console.WriteLine();
+                    foreach (var k in requestKeys)
+                    {
+                        Console.WriteLine("\t{0,-45} => {1}", k, webHeaderCollectionRequest.Get(k));
+                    }
+                }
+
+                // RESPONSE
+                HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                jsonString = readResponse(httpWebResponse);
+
+                if (this.debug)
+                {
+                    WebHeaderCollection webHeaderCollectionResponse = httpWebResponse.Headers;
+                    string[] responseKeys = httpWebResponse.Headers.AllKeys;
+
+                    Console.WriteLine("\nHttpResponse => " + this.endpoint);
+                    foreach (var k in responseKeys)
+                    {
+                        Console.WriteLine("\t{0,-45} => {1}", k, webHeaderCollectionResponse.Get(k));
+                    }
+
+                    Console.WriteLine(SP2013REST.jsonPretty(jsonString));
+                }
+
+            } catch(Exception ex) 
+            {
+                string msg = String.Format("\nERROR: HttpWebRequest {0} => {1}\n\n{2}", this.httpWebRequest.Method, this.endpoint, ex.Message);
+                throw new SP2013Exception(msg);
+            }
             return jsonString;
         }
 
