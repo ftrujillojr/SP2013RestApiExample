@@ -58,7 +58,7 @@ namespace SP2013Example
                 }
 
                 // RESPONSE
-                HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                HttpWebResponse httpWebResponse = (HttpWebResponse)this.httpWebRequest.GetResponse();
                 jsonString = readResponse(httpWebResponse);
 
                 if (this.debug)
@@ -85,35 +85,37 @@ namespace SP2013Example
 
         public String executePost(string jsonPayload, string httpMethodOverride, string etag)
         {
+            String jsonString = null;
+
             // SP2013 REST API endpoint
-            HttpWebRequest httpWebRequest = this.getHttpWebRequestWithNTLMCredentials(this.endpoint);
+            this.httpWebRequest = this.getHttpWebRequestWithNTLMCredentials(this.endpoint);
 
             // HEADERS
-            httpWebRequest.Method = "POST";
-            httpWebRequest.Accept = "application/json;odata=verbose";
-            httpWebRequest.ContentType = "application/json;odata=verbose";
-            httpWebRequest.Timeout = 60 * 1000; // GetResponse() timeout.
+            this.httpWebRequest.Method = "POST";
+            this.httpWebRequest.Accept = "application/json;odata=verbose";
+            this.httpWebRequest.ContentType = "application/json;odata=verbose";
+            this.httpWebRequest.Timeout = 60 * 1000; // GetResponse() timeout.
 
             // http://www.hanselman.com/blog/HTTPPUTOrDELETENotAllowedUseXHTTPMethodOverrideForYourRESTServiceWithASPNETWebAPI.aspx
             if (httpMethodOverride != null && Regex.IsMatch(httpMethodOverride, "PUT|MERGE|DELETE"))
             {
-                httpWebRequest.Headers.Add("X-HTTP-Method", httpMethodOverride);
+                this.httpWebRequest.Headers.Add("X-HTTP-Method", httpMethodOverride);
             }
 
             if (jsonPayload == null)
             {
-                httpWebRequest.ContentLength = 0;
+                this.httpWebRequest.ContentLength = 0;
             }
             else
             {
-                httpWebRequest.ContentLength = jsonPayload.Length;
+                this.httpWebRequest.ContentLength = jsonPayload.Length;
                 if (jsonPayload.Length > 0)
                 {
                     // Encode String jsonPayload to Byte[]
                     Byte[] jsonPostData = System.Text.Encoding.ASCII.GetBytes(jsonPayload);
 
                     // Get Stream for data json payload
-                    Stream stream = httpWebRequest.GetRequestStream();
+                    Stream stream = this.httpWebRequest.GetRequestStream();
                     stream.Write(jsonPostData, 0, jsonPostData.Length);
                     stream.Close();
                 }
@@ -121,22 +123,51 @@ namespace SP2013Example
 
             if (etag == null)
             {
-                httpWebRequest.Headers.Add("If-Match", "*");  // update or delete reguardless of etag.
+                this.httpWebRequest.Headers.Add("If-Match", "*");  // update or delete reguardless of etag.
             }
             else
             {
-                httpWebRequest.Headers.Add("If-Match", etag);  // update or delete only if same record.
+                this.httpWebRequest.Headers.Add("If-Match", etag);  // update or delete only if same record.
             }
 
             if (httpMethodOverride != null && Regex.IsMatch(httpMethodOverride, "POST|PUT|MERGE|DELETE"))
             {
                 // All POST, PUT, DELETE, MERGE need this RequestDigest value.
-                httpWebRequest.Headers.Add("X-RequestDigest", this.getFormDigestValue());
+                this.httpWebRequest.Headers.Add("X-RequestDigest", this.getFormDigestValue());
+            }
+
+            if (this.debug)
+            {
+                Console.WriteLine("\nHttpWebRequest {0} => {1}", this.httpWebRequest.Method, this.endpoint);
+                WebHeaderCollection webHeaderCollectionRequest = this.httpWebRequest.Headers;
+                string[] requestKeys = httpWebRequest.Headers.AllKeys;
+                Console.WriteLine();
+                foreach (var k in requestKeys)
+                {
+                    Console.WriteLine("\t{0,-45} => {1}", k, webHeaderCollectionRequest.Get(k));
+                }
+                Console.WriteLine("JSON payload\n==================================\n");
+                Console.WriteLine(SP2013REST.jsonPretty(jsonPayload));
+                Console.WriteLine();
             }
 
             // RESPONSE
-            HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-            String jsonString = readResponse(httpWebResponse);
+            HttpWebResponse httpWebResponse = (HttpWebResponse)this.httpWebRequest.GetResponse();
+            jsonString = readResponse(httpWebResponse);
+
+            if (this.debug)
+            {
+                WebHeaderCollection webHeaderCollectionResponse = httpWebResponse.Headers;
+                string[] responseKeys = httpWebResponse.Headers.AllKeys;
+
+                Console.WriteLine("\nHttpResponse => " + this.endpoint);
+                foreach (var k in responseKeys)
+                {
+                    Console.WriteLine("\t{0,-45} => {1}", k, webHeaderCollectionResponse.Get(k));
+                }
+
+                Console.WriteLine(SP2013REST.jsonPretty(jsonString));
+            }
 
             return jsonString;
         }
