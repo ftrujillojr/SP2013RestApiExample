@@ -78,7 +78,13 @@ namespace SP2013Example
 
             } catch(Exception ex) 
             {
-                string msg = String.Format("\nERROR: HttpWebRequest {0} => {1}\n\n{2}", this.httpWebRequest.Method, this.endpoint, ex.Message);
+                string msg = String.Format("\nERROR: HttpWebRequest {0} => {1}\n\n{2}\n\n", this.httpWebRequest.Method, this.endpoint, ex.Message);
+                if (Regex.IsMatch(ex.Message, "Bad Request"))
+                {
+                    msg += "A Bad Request means your URL was malformed somehow.\n";
+                    msg += "Common mistakes are missing & or ? for query params.\n";
+                    msg += "Or, the SP site url base is wrong.\n";
+                }
                 throw new SP2013Exception(msg);
             }
             return jsonString;
