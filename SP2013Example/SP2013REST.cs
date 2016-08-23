@@ -76,7 +76,8 @@ namespace SP2013Example
                     Console.WriteLine(SP2013REST.jsonPretty(jsonString));
                 }
 
-            } catch(Exception ex) 
+            }
+            catch (Exception ex)
             {
                 string msg = String.Format("\nERROR: HttpWebRequest {0} => {1}\n\n{2}\n\n", this.httpWebRequest.Method, this.endpoint, ex.Message);
                 if (Regex.IsMatch(ex.Message, "Bad Request"))
@@ -96,6 +97,9 @@ namespace SP2013Example
 
             try
             {
+                // All POST, PUT, DELETE, MERGE need this RequestDigest value.
+                string digestValue = this.getFormDigestValue();
+
                 // SP2013 REST API endpoint
                 this.httpWebRequest = this.getHttpWebRequestWithNTLMCredentials(this.endpoint);
 
@@ -139,17 +143,14 @@ namespace SP2013Example
                     this.httpWebRequest.Headers.Add("If-Match", etag);  // update or delete only if same record.
                 }
 
-                if (httpMethodOverride != null && Regex.IsMatch(httpMethodOverride, "POST|PUT|MERGE|DELETE"))
-                {
-                    // All POST, PUT, DELETE, MERGE need this RequestDigest value.
-                    this.httpWebRequest.Headers.Add("X-RequestDigest", this.getFormDigestValue());
-                }
-
+                this.httpWebRequest.Headers.Add("X-RequestDigest", digestValue);
 
                 if (this.debug)
                 {
+                    Console.WriteLine("DIGEST used: " + digestValue);
+
                     WebHeaderCollection webHeaderCollectionRequest = this.httpWebRequest.Headers;
-                    string[] requestKeys = httpWebRequest.Headers.AllKeys;
+                    string[] requestKeys = this.httpWebRequest.Headers.AllKeys;
                     Console.WriteLine();
                     foreach (var k in requestKeys)
                     {
@@ -164,11 +165,11 @@ namespace SP2013Example
                 HttpWebResponse httpWebResponse = (HttpWebResponse)this.httpWebRequest.GetResponse();
                 jsonString = readResponse(httpWebResponse);
 
-                Console.WriteLine("\nHttpWebRequest {0} X-Http-Method-Override: {1} => {2}",
-                    this.httpWebRequest.Method, httpMethodOverride, this.endpoint);
 
                 if (this.debug)
                 {
+                    Console.WriteLine("\nHttpWebRequest {0} X-Http-Method-Override: {1} => {2}",
+                        this.httpWebRequest.Method, httpMethodOverride, this.endpoint);
                     WebHeaderCollection webHeaderCollectionResponse = httpWebResponse.Headers;
                     string[] responseKeys = httpWebResponse.Headers.AllKeys;
 
@@ -184,7 +185,7 @@ namespace SP2013Example
             }
             catch (Exception ex)
             {
-                string msg = String.Format("\nERROR: HttpWebRequest {0} X-Http-Method-Override:{1} => {2}\n\n{3}", 
+                string msg = String.Format("\nERROR: HttpWebRequest {0} X-Http-Method-Override:{1} => {2}\n\n{3}",
                     this.httpWebRequest.Method, httpMethodOverride, this.endpoint, ex.Message);
                 throw new SP2013Exception(msg);
             }
@@ -230,11 +231,13 @@ namespace SP2013Example
             // HEADERS
             contextRequest.Method = "POST";
             contextRequest.Accept = "application/json;odata=verbose";
+            contextRequest.ContentType = "application/json;odata=verbose";
             contextRequest.ContentLength = 0;  // MUST 
+            contextRequest.Timeout = 60 * 1000; // GetResponse() timeout.
 
             // RESPONSE
             HttpWebResponse contextResponse = (HttpWebResponse)contextRequest.GetResponse();
-            String contextJson = readResponse(contextResponse);
+            String contextJson = this.readResponse(contextResponse);
 
             // Deserialize JSON to Custom Object
             SP2013_ContextInfo.ContextInfo contextInfo = JsonConvert.DeserializeObject<SP2013_ContextInfo.ContextInfo>(contextJson);

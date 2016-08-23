@@ -17,6 +17,7 @@ namespace SP2013Example
         static void Main(string[] args)
         {
             /*
+            
             SP2013REST contextInfoRequest = new SP2013REST("http://edc.micron.com/mti/MEM002", "/_api/contextinfo");
             String contextInfoResponse = contextInfoRequest.executePost(null, null, null);
 
@@ -24,13 +25,12 @@ namespace SP2013Example
             SP2013_ContextInfo.ContextInfo contextInfo = JsonConvert.DeserializeObject<SP2013_ContextInfo.ContextInfo>(contextInfoResponse);
             Console.WriteLine("{0}\n", contextInfo.d.GetContextWebInformation.FormDigestValue);
 
-            string prettyJson = SP2013REST.objectToJsonPretty(contextInfo);
+            //string prettyJson = SP2013REST.objectToJsonPretty(contextInfo);
             //string compactJson = SP2013REST.objectToJsonCompact(contextInfo);
-            Console.WriteLine("{0}\n", prettyJson);
+            //Console.WriteLine("{0}\n", prettyJson);
             //Console.WriteLine("{0}\n", compactJson);
             //Console.WriteLine("{0}\n", SP2013REST.jsonPretty(compactJson));
 
-            */
 
             // *****************************************************************************************************************************************
 
@@ -99,36 +99,86 @@ namespace SP2013Example
             {
                 Console.WriteLine(ex.Message);
             }
+            */
 
             // *****************************************************************************************************************************************
 
+
+
             try
             {
-                SP2013REST opSSDItemsRequest = new SP2013REST("http://edc.micron.com/mti/MEM002",
-                    "/_api/Web/Lists/GetByTitle('Operations SSD')/Items" +
-                    "?$select=Id,Title,Created,Modified,EDC_MemoryArea,File/Name,File/Title,File/ServerRelativeUrl" + 
-                    "&$expand=File&$orderby=Modified desc");
-                String opSSDItemsResponse = opSSDItemsRequest.executeGet();
+                /*
+                SP2013REST taxonomyRequest = new SP2013REST("http://edc.micron.com/mti/MEM002",
+                    "/_api/Web/Lists/GetByTitle('TaxonomyHiddenList')/Items" +
+                    "?$select=Title,Id");
+
+                String taxonomyResponse = taxonomyRequest.executeGet();
 
                 // Deserialize JSON to Custom Object
-                SP2013_WebListItems.WebListItems webListItems = JsonConvert.DeserializeObject<SP2013_WebListItems.WebListItems>(opSSDItemsResponse);
+                SP2013_WebListItems.WebListItems taxonomyItems = JsonConvert.DeserializeObject<SP2013_WebListItems.WebListItems>(taxonomyResponse);
 
                 Console.WriteLine("\n");
-                foreach (SP2013_WebListItems.Result result in webListItems.d.results)
+                foreach (SP2013_WebListItems.Result result in taxonomyItems.d.results)
                 {
-                    Console.Write("{0,8} ", result.ID);
-                    Console.Write("{0} ", String.Format("{0:yyyy'-'MM'-'dd'T'HH':'MM':'ss'.'FFFzz}", result.Modified));
-                    Console.Write("{0} ", result.EDC_MemoryArea);
-                    Console.Write("{0} ", result.EDC_MemoryDocType);
-                    Console.Write("{0} ", result.EDC_MicronProduct);
-                    Console.Write("{0} ", result.File.ServerRelativeUrl);
-                    Console.WriteLine("");
+                    Console.WriteLine("{0} {1}", result.Id, result.Title);
                 }
+                Console.WriteLine("\n");
+                */
+
+                    //"/_api/Web/Lists/GetByTitle('Operations SSD')/Items?" +
+
+
+               SP2013_CAMLQuery.CAMLQuery camlQuery = new SP2013_CAMLQuery.CAMLQuery();
+               SP2013_CAMLQuery.Query query = new SP2013_CAMLQuery.Query();
+               camlQuery.query = query;
+               SP2013_CAMLQuery.Metadata metadata = new SP2013_CAMLQuery.Metadata();
+               camlQuery.query.__metadata = metadata; 
+               camlQuery.query.__metadata.type = "SP.CamlQuery";
+
+               camlQuery.query.ViewXml = "<View><Query><OrderBy><FieldRef Name='Modified' Ascending='FALSE'/></OrderBy><Where><IsNotNull><FieldRef Name='EDC_MemoryArea'/></IsNotNull></Where></View></Query>";
+               string jsonCaml = SP2013REST.objectToJsonPretty(camlQuery);
+
+               //Console.WriteLine("json CAML\n" + jsonCaml);
+               
+               SP2013REST opSSDItemsRequest = new SP2013REST("http://edc.micron.com/mti/MEM002",
+                   "/_api/web/Lists/GetByTitle('Operations SSD')/GetItems?"  +
+                   "$select=Id,Title,Created,Modified,EDC_MemoryArea,EDC_MemoryDocType,EDC_MicronProduct,File/ServerRelativeUrl&" +
+                   "$expand=File"
+               );
+
+               String opSSDItemsResponse = opSSDItemsRequest.executePost(jsonCaml, null, null);
+
+               // Deserialize JSON to Custom Object
+               SP2013_WebListItems.WebListItems webListItems = JsonConvert.DeserializeObject<SP2013_WebListItems.WebListItems>(opSSDItemsResponse);
+
+               Console.WriteLine("\n");
+               foreach (SP2013_WebListItems.Result result in webListItems.d.results)
+               {
+                   if (result.EDC_MemoryArea == null)
+                   {
+                       result.EDC_MemoryArea = new SP2013_WebListItems.EDC_MemoryArea();
+                   }
+                   if (result.EDC_MemoryDocType == null)
+                   {
+                       result.EDC_MemoryDocType = new SP2013_WebListItems.EDC_MemoryDocType();
+                   }
+                   if (result.EDC_MicronProduct == null)
+                   {
+                       result.EDC_MicronProduct = new SP2013_WebListItems.EDC_MicronProduct();
+                   }
+                   Console.Write("{0,8} ", result.ID);
+                   Console.Write("{0} ", String.Format("{0:yyyy'-'MM'-'dd'T'HH':'MM':'ss'.'FFFzz}", result.Modified));
+                   Console.Write("{0,-40} ", result.EDC_MemoryArea.Label);
+                   Console.Write("{0} ", result.File.ServerRelativeUrl);
+                   Console.WriteLine("");
+               }
+                
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
+
 
         }
     }

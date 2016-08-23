@@ -79,6 +79,49 @@ namespace SP2013_WebListItems
         public string Url { get; set; }
     }
 
+    public class EDC_MemoryArea
+    {
+        public Metadata __metadata { get; set; }
+        public string Label {get; set;}
+        public string TermGuid {get; set;}
+        public int WssId {get; set;}
+
+        public EDC_MemoryArea()
+        {
+            this.Label = "N/A";
+            this.TermGuid = "N/A";
+            this.WssId = -1;
+        }
+    }
+    public class EDC_MemoryDocType
+    {
+        public Metadata __metadata { get; set; }
+        public string Label {get; set;}
+        public string TermGuid {get; set;}
+        public int WssId {get; set;}
+
+        public EDC_MemoryDocType()
+        {
+            this.Label = "N/A";
+            this.TermGuid = "N/A";
+            this.WssId = -1;
+        }
+    }
+    public class EDC_MicronProduct
+    {
+        public Metadata __metadata { get; set; }
+        public string Label {get; set;}
+        public string TermGuid {get; set;}
+        public int WssId {get; set;}
+
+        public EDC_MicronProduct()
+        {
+            this.Label = "N/A";
+            this.TermGuid = "N/A";
+            this.WssId = -1;
+        }
+    }
+
     public class Result
     {
         public Metadata __metadata { get; set; }
@@ -131,9 +174,9 @@ namespace SP2013_WebListItems
         public object EDC_ManufacturingGroup { get; set; }
         public object EDC_MfgProcess { get; set; }
         public object EDC_MfgStatus { get; set; }
-        public object EDC_MemoryArea { get; set; }
-        public object EDC_MicronProduct { get; set; }
-        public object EDC_MemoryDocType { get; set; }
+        public EDC_MemoryArea EDC_MemoryArea { get; set; }
+        public EDC_MicronProduct EDC_MicronProduct { get; set; }
+        public EDC_MemoryDocType EDC_MemoryDocType { get; set; }
         public object EDC_MicronPrdRequirement { get; set; }
         public object Approval { get; set; }
         public object EmFrom { get; set; }
