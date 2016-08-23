@@ -16,7 +16,7 @@ namespace SP2013Example
     {
         static void Main(string[] args)
         {
-            /*
+/*
             
             SP2013REST contextInfoRequest = new SP2013REST("http://edc.micron.com/mti/MEM002", "/_api/contextinfo");
             String contextInfoResponse = contextInfoRequest.executePost(null, null, null);
@@ -30,7 +30,7 @@ namespace SP2013Example
             //Console.WriteLine("{0}\n", prettyJson);
             //Console.WriteLine("{0}\n", compactJson);
             //Console.WriteLine("{0}\n", SP2013REST.jsonPretty(compactJson));
-
+*/
 
             // *****************************************************************************************************************************************
 
@@ -99,12 +99,8 @@ namespace SP2013Example
             {
                 Console.WriteLine(ex.Message);
             }
-            */
 
             // *****************************************************************************************************************************************
-
-
-
             try
             {
                 /*
@@ -125,9 +121,6 @@ namespace SP2013Example
                 Console.WriteLine("\n");
                 */
 
-                    //"/_api/Web/Lists/GetByTitle('Operations SSD')/Items?" +
-
-
                SP2013_CAMLQuery.CAMLQuery camlQuery = new SP2013_CAMLQuery.CAMLQuery();
                SP2013_CAMLQuery.Query query = new SP2013_CAMLQuery.Query();
                camlQuery.query = query;
@@ -138,7 +131,6 @@ namespace SP2013Example
                camlQuery.query.ViewXml = "<View><Query><OrderBy><FieldRef Name='Modified' Ascending='FALSE'/></OrderBy><Where><IsNotNull><FieldRef Name='EDC_MemoryArea'/></IsNotNull></Where></View></Query>";
                string jsonCaml = SP2013REST.objectToJsonPretty(camlQuery);
 
-               //Console.WriteLine("json CAML\n" + jsonCaml);
                
                SP2013REST opSSDItemsRequest = new SP2013REST("http://edc.micron.com/mti/MEM002",
                    "/_api/web/Lists/GetByTitle('Operations SSD')/GetItems?"  +
@@ -151,7 +143,8 @@ namespace SP2013Example
                // Deserialize JSON to Custom Object
                SP2013_WebListItems.WebListItems webListItems = JsonConvert.DeserializeObject<SP2013_WebListItems.WebListItems>(opSSDItemsResponse);
 
-               Console.WriteLine("\n");
+               Console.WriteLine("\nShow all files from EDC_MemoryArea");
+               Console.WriteLine("==========================================");
                foreach (SP2013_WebListItems.Result result in webListItems.d.results)
                {
                    if (result.EDC_MemoryArea == null)

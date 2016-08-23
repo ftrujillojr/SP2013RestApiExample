@@ -156,20 +156,21 @@ namespace SP2013Example
                     {
                         Console.WriteLine("\t{0,-45} => {1}", k, webHeaderCollectionRequest.Get(k));
                     }
-                    Console.WriteLine("JSON payload\n==================================\n");
-                    Console.WriteLine(SP2013REST.jsonPretty(jsonPayload));
-                    Console.WriteLine();
                 }
 
                 // RESPONSE
                 HttpWebResponse httpWebResponse = (HttpWebResponse)this.httpWebRequest.GetResponse();
                 jsonString = readResponse(httpWebResponse);
 
+                Console.WriteLine("\nHttpWebRequest {0} X-Http-Method-Override: {1} => {2}",
+                    this.httpWebRequest.Method, httpMethodOverride, this.endpoint);
+
+                Console.WriteLine("\nJSON payload\n==================================");
+                Console.WriteLine(SP2013REST.jsonPretty(jsonPayload));
+                Console.WriteLine();
 
                 if (this.debug)
                 {
-                    Console.WriteLine("\nHttpWebRequest {0} X-Http-Method-Override: {1} => {2}",
-                        this.httpWebRequest.Method, httpMethodOverride, this.endpoint);
                     WebHeaderCollection webHeaderCollectionResponse = httpWebResponse.Headers;
                     string[] responseKeys = httpWebResponse.Headers.AllKeys;
 
