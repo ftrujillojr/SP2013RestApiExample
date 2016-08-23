@@ -56,6 +56,7 @@
     <Compile Include="WebList.cs" />
     <Compile Include="WebListItems.cs" />
     <Compile Include="WebLists.cs" />
+    <Compile Include="Webs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

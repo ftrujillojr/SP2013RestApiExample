@@ -32,6 +32,29 @@ namespace SP2013Example
             //Console.WriteLine("{0}\n", SP2013REST.jsonPretty(compactJson));
 */
 
+            try
+            {
+                SP2013REST webRequest = new SP2013REST("http://collab.micron.com/products/memorysolutions/NVE/NVESSD/SSDDEVWS",
+                                                        "/_api/Web/Webs?$select=Title,Url,Id&$top=5",
+                                                        false);
+                String webResponse = webRequest.executeGet();
+
+                SP2013_Webs.Webs webs = JsonConvert.DeserializeObject<SP2013_Webs.Webs>(webResponse);
+                Console.WriteLine("\nShowing All Sub sites contained on web site. (top 5 for this example)");
+                Console.WriteLine("==========================================================================");
+                Console.WriteLine("{0,-20} {1,-40} {2}", "Title", "Id", "URL");
+                foreach (SP2013_Webs.Result result in webs.d.results)
+                {
+                    Console.WriteLine("{0,-20} {1,-40} {2}", result.Title, result.Id, result.Url);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+//            Environment.Exit(0);
+
             // *****************************************************************************************************************************************
 
             try
